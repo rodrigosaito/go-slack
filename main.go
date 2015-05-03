@@ -7,10 +7,11 @@ import (
 )
 
 func main() {
-	var url, username, channel string
+	var url, username, iconUrl, channel string
 
 	flag.StringVar(&url, "url", "", "url to send webhooks")
 	flag.StringVar(&username, "username", "", "custom name")
+	flag.StringVar(&iconUrl, "icon-url", "", "custom icon")
 	flag.StringVar(&channel, "channel", "", "#channel or @user to send the message to")
 	flag.Parse()
 
@@ -29,8 +30,13 @@ func main() {
 	w := Webhook{
 		Text:     message,
 		Username: username,
+		Icon:     iconUrl,
 		Channel:  channel,
 	}
 
-	client.Send(w)
+	err := client.Send(w)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }

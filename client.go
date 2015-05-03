@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -14,6 +15,7 @@ type Config struct {
 type Webhook struct {
 	Text     string `json:"text"`
 	Username string `json:"username,omitempty"`
+	Icon     string `json:"icon_url,omitempty"`
 	Channel  string `json:"channel,omitempty"`
 }
 
@@ -40,7 +42,15 @@ func (self *Client) Send(webhook Webhook) error {
 		return err
 	}
 
-	fmt.Println(resp)
+	if resp.StatusCode != 200 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("Something bad happened: %s", body)
+	}
+
+	fmt.Println("Message sent")
 
 	return nil
 }
